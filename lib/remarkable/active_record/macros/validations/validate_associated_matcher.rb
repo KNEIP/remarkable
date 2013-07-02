@@ -42,7 +42,17 @@ module Remarkable # :nodoc:
             @association_object = @spec.instance_variable_get("@#{@singular}")
           end
 
-          if plural?
+          if invariant?
+            if @association_object
+              raise "This case isn't implemented yet. Please do it now. =)"
+            else
+              if @subject.respond_to?("build_#{@singular}")
+                @association_object = @subject.send("build_#{@singular}")
+              elsif @subject.send(@plural).respond_to?(:build)
+                @association_object = @subject.send(@plural).send(:build)
+              end
+            end
+          elsif plural?
             if @association_object # Append the association if already found
               @subject.send(@plural).send('<<', @association_object)
             elsif @subject.send(@plural).respond_to?(:build)
@@ -69,7 +79,13 @@ module Remarkable # :nodoc:
 
         def valid?
           # Try to save the association
-          association_saved = if plural?
+          association_saved = if invariant?
+            if @subject.send(@plural).respond_to?(:last)
+              @subject.send(@plural).last.save
+            else
+              @subject.send(@singular).save
+            end
+          elsif plural?
             @subject.send(@plural).last.save
           elsif singular?
             @subject.send(@singular).save
@@ -98,6 +114,10 @@ module Remarkable # :nodoc:
 
         def default_options
           { :message => :invalid }
+        end
+
+        def invariant?
+          plural? == singular?
         end
 
         def plural?
