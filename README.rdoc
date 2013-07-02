@@ -1,3 +1,10 @@
+== About this fork
+
+This fork has been created as our main project was started with Rails 2.2.2 and remarkable.
+
+Since we upgraded to the latest Rails 2.3.x version some tests are failing so we are maintaining this gem.
+
+
 = Simplifying tests!
 
 Remarkable is a framework for Rspec matchers.
